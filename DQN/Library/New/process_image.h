@@ -14,9 +14,9 @@ struct Rect {
     float left, right, bottom, top;
 };
 
-Image *load_image(const char *path) {
-    Image *img;
-    lodepng_decode_file(img->img, img->w, img->h, path, LCT_RGBA, 8);
+Image load_image(const char *path) {
+    Image img;
+    lodepng_decode_file(img.img, img.w, img.h, path, LCT_RGBA, 8);
     return img;
 }
 
@@ -29,7 +29,7 @@ GLuint create_texture(Image *img) {
     glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-void bind_texture(texture) { glBindTexture(GL_TEXTURE_2D, texture); }
+void bind_texture(GLuint texture) { glBindTexture(GL_TEXTURE_2D, texture); }
 
 void draw_rect(Rect *rct) {
     glBegin(GL_POLYGON);

@@ -47,17 +47,17 @@ void gen_map(int choice) {
     float arr[67][100];
     for (int i = 0; i < 67; i++)
         for (int j = 0; j < 100; j++)
-            arr[i][j] = -1.0f;
+            arr[i][j] = 0.0f;
     int n, m;
     n = (int)(player.x / 6);
     for (int i = 0; i < 16; i++)
         for (int j = n - 5; j <= n + 5; j++)
-            arr[i][j] = 0.0f;
+            arr[i][j] = 1.0f;
     if (item.is_alive) {
         n = (int)(item.x / 6);
         for (int i = 0; i <= 6; i++)
             for (int j = n - 3; j <= n + 3; j++)
-                arr[i][j] = 0.5f;
+                arr[i][j] = 0.3f;
     }
     for (Ball ball : Ball::balls) {
         m = (int)(ball.x / 6);
@@ -68,7 +68,7 @@ void gen_map(int choice) {
             m = 96;
         for (int i = n; i <= n + 6; i++)
             for (int j = m - 3; j <= m + 3; j++)
-                arr[i][j] = 1.0f;
+                arr[i][j] = 0.6f;
     }
     for (int i = 0; i < 67; i++)
         for (int j = 0; j < 100; j++)

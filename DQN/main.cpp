@@ -35,17 +35,17 @@ void send_and_receive() {
     float arr[67][100];
     for (int i = 0; i < 67; i++)
         for (int j = 0; j < 100; j++)
-            arr[i][j] = -1.0f;
+            arr[i][j] = 0.0f;
     int n, m;
     n = (int)(player.x / 6);
     for (int i = 0; i < 16; i++)
         for (int j = n - 5; j <= n + 5; j++)
-            arr[i][j] = 0.0f;
+            arr[i][j] = 1.0f;
     if (item.is_alive) {
         n = (int)(item.x / 6);
         for (int i = 0; i <= 6; i++)
             for (int j = n - 3; j <= n + 3; j++)
-                arr[i][j] = 0.5f;
+                arr[i][j] = 0.3f;
     }
     for (Ball ball : Ball::balls) {
         m = (int)(ball.x / 6);
@@ -56,7 +56,7 @@ void send_and_receive() {
             m = 96;
         for (int i = n; i <= n + 6; i++)
             for (int j = m - 3; j <= m + 3; j++)
-                arr[i][j] = 1.0f;
+                arr[i][j] = 0.6f;
     }
     send(sender, arr, sizeof(arr), 0);
     int value;
@@ -90,12 +90,13 @@ void init() {
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glEnable(GL_TEXTURE_2D);
     glLineWidth(2.0f);
-
+    
     player.init();
     Ball::init(&player);
     Miniball::init();
     item.init(&player, &Ball::balls, Miniball::miniballs);
 
+#ifndef GEN_DATA
     sender = socket(AF_INET, SOCK_DGRAM, 0);
     setsockopt(sender, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt));
     addr_out.sin_family = AF_INET;
@@ -109,8 +110,7 @@ void init() {
     addr_in.sin_addr.s_addr = inet_addr("127.0.0.1");
     addr_in.sin_port = htons(9004);
     bind(receiver, (sockaddr *)&addr_in, sizeof(addr_in));
-
-#ifdef GEN_DATA
+#else
     init_ai();
 #endif
 }
