@@ -73,5 +73,3 @@ Các loại vật phẩm:
 Game: https://youtu.be/BMMJN_dT2-Q
 
 Auto Play: https://youtu.be/lpj_Kmmz3M0
-
---- End ---
