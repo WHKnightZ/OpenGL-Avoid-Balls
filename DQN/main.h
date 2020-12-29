@@ -6,11 +6,11 @@
 
 #include <GL/glut.h>
 
-#include <sys/socket.h>
-#include <fcntl.h>
 #include <arpa/inet.h>
+#include <fcntl.h>
 #include <netinet/in.h>
 #include <netinet/tcp.h>
+#include <sys/socket.h>
 
 #include "Library/loadpng.h"
 #include "Library/process_image.h"
@@ -24,6 +24,8 @@
 
 #define ITEM_MAX 3
 #define LIFE_MAX 3
+
+#define INTERVAL 10
 
 enum PLAYER_STATE { PLAYER_STT_STAND, PLAYER_STT_RUN, PLAYER_STT_DEATH };
 
@@ -44,6 +46,8 @@ class Player {
     float inc_score_alpha, inc_score_x, inc_score_y;
     int timer_num, timer_score;
     char score[3];
+
+    float reward, lose;
 
     Rect rct, rct_life[3], rct_shield;
 
@@ -139,6 +143,9 @@ class Player {
         invul_count = 0;
         inc_score_count = 0;
         timer_num = timer_score = 0;
+
+        reward = 0.0f;
+        lose = -1.0f;
     }
 
     void inc_score() {
@@ -151,6 +158,8 @@ class Player {
                 score[0] += 1;
             }
         }
+
+        reward += 1.0f;
     }
 
     void inc_score_item(float item_left, float item_top) {
@@ -160,6 +169,8 @@ class Player {
         inc_score_count = 20;
         inc_score_x = item_left + 9.0f;
         inc_score_y = item_top + 18.0f;
+
+        reward += 20.0f;
     }
 
     void run_left() {
@@ -188,8 +199,12 @@ class Player {
     void collide_ball() {
         if (has_shield) {
             has_shield = 0;
-        } else
+        } else {
             life--;
+
+            reward -= 10.0f;
+            lose = 1.0f;
+        }
         if (life == 0) {
             stt = PLAYER_STT_DEATH;
             num = 0;
