@@ -13,7 +13,73 @@ int choice_score[MAX_CHOICE];
 std::vector<Ball> balls;
 FILE *f;
 
+int episode = 0, iteration = 0;
+
+Player player;
+
+Player *Ball::player;
+Image Ball::img;
+std::vector<Ball> Ball::balls;
+int Ball::timer_spawn;
+
+Miniball Miniball::miniballs[15];
+Image Miniball::img;
+int Miniball::explode_count;
+float Miniball::explode_alpha;
+float Miniball::offset_angle;
+
+Item item;
+
+void reload() {
+    player.reload();
+    Ball::reload();
+    item.reload();
+}
+
 void init_ai() { f = fopen("data.csv", "w"); }
+
+void init() {
+    glClearColor(0.2f, 0.4f, 0.4f, 1.0f);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glViewport(0, 0, WIDTH, HEIGHT);
+    gluOrtho2D(0, WIDTH, 0, HEIGHT);
+    glMatrixMode(GL_MODELVIEW);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable(GL_LINE_SMOOTH);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glEnable(GL_TEXTURE_2D);
+    glLineWidth(2.0f);
+
+    player.init();
+    Ball::init(&player);
+    Miniball::init();
+    item.init(&player, &Ball::balls, Miniball::miniballs);
+    init_ai();
+}
+
+void display() {
+    glClear(GL_COLOR_BUFFER_BIT);
+
+    glLoadIdentity();
+    glDisable(GL_TEXTURE_2D);
+    glBegin(GL_LINES);
+    glVertex2f(0, 147.0f);
+    glVertex2f(WIDTH, 147.0f);
+    glEnd();
+    glEnable(GL_TEXTURE_2D);
+
+    Miniball::renders();
+    Ball::renders();
+    item.render();
+    player.render();
+
+    glutSwapBuffers();
+}
 
 bool check_collision_edge_stand() { return false; }
 
@@ -84,7 +150,8 @@ void move_player() {
         player.run_right();
         break;
     }
-    gen_map(n);
+    if (iteration > 30)
+        gen_map(n);
 }
 
 int is_collision(float p) {
@@ -113,11 +180,8 @@ void calculate_score() {
                 p = &choice_pos[i];
                 *p += choice_offset[i];
                 if (!is_collision(*p) && !check_collision_edge[i]()) {
-                    if (item.is_alive && *p > item.rct.Left && *p < item.rct.Right) {
+                    if (item.is_alive && *p > item.rct.Left && *p < item.rct.Right)
                         choice_score[i] += 40;
-                        // choice_done[i] = 1;
-                        // count_done += 1;
-                    }
                     choice_score[i] += 1;
                 } else {
                     choice_done[i] = 1;
@@ -127,7 +191,45 @@ void calculate_score() {
         }
         n += 1;
     }
-    // printf("%d %d %d\n", choice_score[0], choice_score[1], choice_score[2]);
 
     move_player();
+}
+
+void timer(int v) {
+    if (episode < 30) {
+        if (player.lose > 0.0f) {
+            reload();
+            iteration = 0;
+            episode += 1;
+        } else {
+            calculate_score();
+
+            iteration += 1;
+            Miniball::updates();
+            Ball::updates();
+            item.update();
+            player.update();
+            // glutPostRedisplay();
+        }
+        glutTimerFunc(0, timer, 0);
+    } else {
+        printf("%d %d\n", episode, iteration);
+        exit(0);
+    }
+}
+
+int main(int argc, char **argv) {
+    glutInit(&argc, argv);
+    glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE);
+    int POS_X, POS_Y;
+    POS_X = (glutGet(GLUT_SCREEN_WIDTH) - WIDTH) >> 1;
+    POS_Y = (glutGet(GLUT_SCREEN_HEIGHT) - HEIGHT) >> 1;
+    glutInitWindowPosition(POS_X, POS_Y);
+    glutInitWindowSize(WIDTH, HEIGHT);
+    glutCreateWindow("Avoid Balls");
+    init();
+    glutTimerFunc(0, timer, 0);
+    glutDisplayFunc(display);
+    glutMainLoop();
+    return 0;
 }

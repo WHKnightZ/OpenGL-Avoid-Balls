@@ -136,7 +136,7 @@ void timer(int v) {
         glutPostRedisplay();
     }
     send_state();
-    glutTimerFunc(INTERVAL, timer, 0);
+    glutTimerFunc(10, timer, 0);
 }
 
 int main(int argc, char **argv) {

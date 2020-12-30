@@ -25,7 +25,7 @@
 #define ITEM_MAX 3
 #define LIFE_MAX 3
 
-#define INTERVAL 10
+#define INTERVAL 0
 
 enum PLAYER_STATE { PLAYER_STT_STAND, PLAYER_STT_RUN, PLAYER_STT_DEATH };
 
@@ -124,11 +124,12 @@ class Player {
         rct_shield.Bottom = rct.Bottom;
         rct_shield.Top = rct_shield.Bottom + shield_h;
 
+        srand(time(0));
+
         reload();
     }
 
     void reload() {
-        srand(0);
         score[0] = score[1] = score[2] = '0';
         stt = 0;
         drt = 1;
