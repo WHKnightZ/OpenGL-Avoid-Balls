@@ -7,10 +7,6 @@
 #include <GL/glut.h>
 
 #include <arpa/inet.h>
-#include <fcntl.h>
-#include <netinet/in.h>
-#include <netinet/tcp.h>
-#include <sys/socket.h>
 
 #include "Library/loadpng.h"
 #include "Library/process_image.h"
@@ -124,12 +120,14 @@ class Player {
         rct_shield.Bottom = rct.Bottom;
         rct_shield.Top = rct_shield.Bottom + shield_h;
 
-        srand(time(0));
+        // srand(time(0));
 
         reload();
     }
 
     void reload() {
+        // srand(0);
+
         score[0] = score[1] = score[2] = '0';
         stt = 0;
         drt = 1;
@@ -160,7 +158,7 @@ class Player {
             }
         }
 
-        reward += 1.0f;
+        reward += 0.02f;
     }
 
     void inc_score_item(float item_left, float item_top) {
@@ -170,8 +168,6 @@ class Player {
         inc_score_count = 20;
         inc_score_x = item_left + 9.0f;
         inc_score_y = item_top + 18.0f;
-
-        reward += 20.0f;
     }
 
     void run_left() {
@@ -203,7 +199,7 @@ class Player {
         } else {
             life--;
 
-            reward -= 10.0f;
+            reward = 0.0f;
             lose = 1.0f;
         }
         if (life == 0) {
@@ -600,6 +596,8 @@ class Item {
             if (player->x > rct.Left && player->x < rct.Right) {
                 (this->*get_item[type])();
                 is_alive = false;
+                
+                player->reward += 0.8f;
             }
         } else {
             timer_spawn++;
