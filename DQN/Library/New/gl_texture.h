@@ -1,9 +1,9 @@
 #ifndef GL_TEXTURE_H
 #define GL_TEXTURE_H
 
-#include <GL/glut.h>
-
 #include "lodepng.h"
+
+#include <GL/glut.h>
 
 struct Image {
     GLubyte *img;
