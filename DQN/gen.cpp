@@ -196,7 +196,7 @@ void calculate_score() {
 }
 
 void timer(int v) {
-    if (episode < 30) {
+    if (episode < 1) {
         if (player.lose > 0.0f) {
             reload();
             iteration = 0;

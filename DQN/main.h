@@ -126,7 +126,7 @@ class Player {
     }
 
     void reload() {
-        // srand(0);
+        srand(0);
 
         score[0] = score[1] = score[2] = '0';
         stt = 0;
@@ -158,7 +158,7 @@ class Player {
             }
         }
 
-        reward += 0.02f;
+        reward += 0.04f;
     }
 
     void inc_score_item(float item_left, float item_top) {
@@ -199,7 +199,7 @@ class Player {
         } else {
             life--;
 
-            reward = 0.0f;
+            reward = -1.0f;
             lose = 1.0f;
         }
         if (life == 0) {
@@ -597,7 +597,7 @@ class Item {
                 (this->*get_item[type])();
                 is_alive = false;
                 
-                player->reward += 0.8f;
+                player->reward += 0.4f;
             }
         } else {
             timer_spawn++;
